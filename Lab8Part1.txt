@@ -1,1 +1,1 @@
-./Debug/main.c.o   
+./Debug/lab8part1.c.o   

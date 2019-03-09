@@ -93,6 +93,6 @@
     </Configuration>
   </Settings>
   <VirtualDirectory Name="src">
-    <File Name="main.c"/>
+    <File Name="lab8part1.c"/>
   </VirtualDirectory>
 </CodeLite_Project>

@@ -325,30 +325,38 @@ void flipTiles(char board[MAX][MAX], int n, char colour, int row, int col, int d
 
 void validateAndFlip(char board[MAX][MAX], int n, char colour, int row, int col){
     
-    if(checkLegalInDirection(board, n, row, col, colour, 1, 0)){
-        flipTiles(board, n, colour, row, col, 1, 0);    
+    for(int i = -1; i <= 1; i++){
+        for(int j = -1; j <= 1; j++){
+            if (checkLegalInDirection(board, n, row, col, colour, i, j)) {
+                flipTiles(board, n, colour, row, col, i, j); 
+            }
+        }
     }
-    if(checkLegalInDirection(board, n, row, col, colour, -1, 0)){
-        flipTiles(board, n, colour, row, col, -1, 0);
-    }  
-    if(checkLegalInDirection(board, n, row, col, colour, 0, 1)){
-        flipTiles(board, n, colour,row,col, 0, 1);
-    } 
-    if(checkLegalInDirection(board, n, row, col, colour, 0,-1)){
-        flipTiles(board, n, colour, row, col,0, -1);
-    }
-    if(checkLegalInDirection(board, n, row, col, colour, -1, -1)){
-        flipTiles(board, n, colour, row, col,-1, -1 );
-    }
-    if(checkLegalInDirection(board, n, row, col, colour, 1, 1)){
-        flipTiles(board, n, colour, row, col,1, 1 );
-    }
-    if(checkLegalInDirection(board, n, row, col, colour, 1, -1)){
-        flipTiles(board, n, colour, row, col, 1,-1);
-    }
-    if(checkLegalInDirection(board, n, row, col, colour, -1, 1)){
-        flipTiles(board, n, colour, row, col, -1,1);
-    }
+    
+//    if(checkLegalInDirection(board, n, row, col, colour, 1, 0)){
+//        flipTiles(board, n, colour, row, col, 1, 0);    
+//    }
+//    if(checkLegalInDirection(board, n, row, col, colour, -1, 0)){
+//        flipTiles(board, n, colour, row, col, -1, 0);
+//    }  
+//    if(checkLegalInDirection(board, n, row, col, colour, 0, 1)){
+//        flipTiles(board, n, colour,row,col, 0, 1);
+//    } 
+//    if(checkLegalInDirection(board, n, row, col, colour, 0,-1)){
+//        flipTiles(board, n, colour, row, col,0, -1);
+//    }
+//    if(checkLegalInDirection(board, n, row, col, colour, -1, -1)){
+//        flipTiles(board, n, colour, row, col,-1, -1 );
+//    }
+//    if(checkLegalInDirection(board, n, row, col, colour, 1, 1)){
+//        flipTiles(board, n, colour, row, col,1, 1 );
+//    }
+//    if(checkLegalInDirection(board, n, row, col, colour, 1, -1)){
+//        flipTiles(board, n, colour, row, col, 1,-1);
+//    }
+//    if(checkLegalInDirection(board, n, row, col, colour, -1, 1)){
+//        flipTiles(board, n, colour, row, col, -1,1);
+//    }
 
 }
 
@@ -386,6 +394,34 @@ void computerMove(char board[MAX][MAX], int n, char computer){      //KEEP (MAIN
  
     int highScore = 0, score = 0; //highest score of board and of cell
     int rowPlay = 0, colPlay = 0; //this refers to the row, col of the highest scoring cell    
+
+    //first, check for hotspots (optimized for 8x8)
+    
+    for(int i = -1; i <= 1; i++){
+        for(int j = -1; j <= 1; j++){
+            //top left
+            if (checkLegalInDirection(board, n, 0, 0, computer, i, j)) {
+                board[0][0] = computer;
+                break;
+            }
+            //top right
+            if (checkLegalInDirection(board, n, 0, 7, computer, i, j)) {
+                board[0][7] = computer;
+                break;
+            }
+            //bottom left
+            if (checkLegalInDirection(board, n, 7, 0, computer, i, j)) {
+                board[0][0] = computer;
+                break;
+            }
+            //bottom right
+            if (checkLegalInDirection(board, n, 7, 7, computer, i, j)) {
+                board[0][0] = computer;
+                break;
+            }
+        }
+    }
+
 
     //check to see if each position is valid. By decrementing for loop from n, I check lowest column and lowest row last!
     for(int i = n-1;i>=0;i--){
@@ -452,18 +488,16 @@ bool availableMoves(char board[MAX][MAX], int n, char player){       //KEEP
     //function that evaluates if there are existing moves for a particular colour
     
     //tests for either White or Black
-    for(int i = 0;i<n;i++){
-        for(int j = 0;j<n;j++){
-            //implement for loop 
-            if(checkLegalInDirection(board, n, i, j, player, 1, 0)) return true;  //DOWN
-            if(checkLegalInDirection(board, n, i, j, player, -1, 0)) return true;  //UP
-            if(checkLegalInDirection(board, n, i, j, player, 0, 1)) return true;  //RIGHT
-            if(checkLegalInDirection(board, n, i, j, player, 0,-1)) return true;  //LEFT
+    for(int a = 0; a < n; a++){
+        for(int b = 0; b < n; b++){
             
-            if(checkLegalInDirection(board, n, i, j, player, -1, -1)) return true;  //NW
-            if(checkLegalInDirection(board, n, i, j, player, 1, 1)) return true;  //SE
-            if(checkLegalInDirection(board, n, i, j, player, 1, -1)) return true;  //SW
-            if(checkLegalInDirection(board, n, i, j, player, -1, 1)) return true;  //NE
+            for(int i = -1; i <= 1; i++){
+                for(int j = -1; j <= 1; j++){
+                    
+                    if (checkLegalInDirection(board, n, a, b, player, i, j)) return true; 
+          
+                }
+            }
         }
     }
     
@@ -475,34 +509,30 @@ bool checkGameState(char board[MAX][MAX], int n){       //REUSING CODE FROM AVAI
     //this function checks the current game state. False for game still running, true for game over
     
     //for white
-    for(int i = 0;i<n;i++){
-        for(int j = 0;j<n;j++){
-            //implement for loop 
-            if(checkLegalInDirection(board, n, i, j, 'W', 1, 0)) return false;  //DOWN
-            if(checkLegalInDirection(board, n, i, j, 'W', -1, 0)) return false;  //UP
-            if(checkLegalInDirection(board, n, i, j, 'W', 0, 1)) return false;  //RIGHT
-            if(checkLegalInDirection(board, n, i, j, 'W', 0,-1)) return false;  //LEFT
+    for(int a = 0; a < n; a++){
+        for(int b = 0; b < n; b++){
             
-            if(checkLegalInDirection(board, n, i, j, 'W', -1, -1)) return false;  //NW
-            if(checkLegalInDirection(board, n, i, j, 'W', 1, 1)) return false;  //SE
-            if(checkLegalInDirection(board, n, i, j, 'W', 1, -1)) return false;  //SW
-            if(checkLegalInDirection(board, n, i, j, 'W', -1, 1)) return false;  //NE
+            for(int i = -1; i <= 1; i++){
+                for(int j = -1; j <= 1; j++){
+                    
+                    if (checkLegalInDirection(board, n, a, b, 'W', i, j)) return false; 
+          
+                }
+            }
         }
     }
     
-    //for black    
-    for(int i = 0;i<n;i++){
-        for(int j = 0;j<n;j++){
-            //implement for loop 
-            if(checkLegalInDirection(board, n, i, j, 'B', 1, 0)) return false;  //DOWN
-            if(checkLegalInDirection(board, n, i, j, 'B', -1, 0)) return false;  //UP
-            if(checkLegalInDirection(board, n, i, j, 'B', 0, 1)) return false;  //RIGHT
-            if(checkLegalInDirection(board, n, i, j, 'B', 0,-1)) return false;  //LEFT
-            
-            if(checkLegalInDirection(board, n, i, j, 'B', -1, -1)) return false;  //NW
-            if(checkLegalInDirection(board, n, i, j, 'B', 1, 1)) return false;  //SE
-            if(checkLegalInDirection(board, n, i, j, 'B', 1, -1)) return false;  //SW
-            if(checkLegalInDirection(board, n, i, j, 'B', -1, 1)) return false;  //NE
+    //for black
+    for(int a = 0; a < n; a++){
+        for(int b = 0; b < n; b++){
+            //direction for loops
+            for(int i = -1; i <= 1; i++){
+                for(int j = -1; j <= 1; j++){
+                    
+                    if (checkLegalInDirection(board, n, a, b, 'B', i, j)) return false; 
+          
+                }
+            }
         }
     }
    
